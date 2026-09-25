@@ -51,9 +51,10 @@ nav{position:sticky;top:0;z-index:50;background:rgba(16,18,22,.93);
   border-bottom:2px solid transparent;transition:color var(--t)}
 .links a:hover{color:var(--ink)}
 .links a.active{color:var(--ink);border-bottom-color:var(--red)}
-.cta{background:var(--red);color:#FFF;font-size:12.5px;font-weight:500;
+.links a.cta{background:var(--red);color:#FFF;font-size:12.5px;font-weight:500;
   padding:8px 15px;text-decoration:none;display:inline-block;
-  -webkit-font-smoothing:auto}
+  border-bottom:4px solid rgba(0,0,0,.35);-webkit-font-smoothing:auto}
+.links a.cta:hover{color:#FFF;filter:brightness(1.1)}
 
 /* hero */
 .hero{padding-top:52px}
