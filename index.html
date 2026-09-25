@@ -132,9 +132,6 @@ textarea{resize:vertical}
   font-size:12.5px;cursor:pointer;transition:all var(--t)}
 .optrow{display:flex;gap:6px;flex-wrap:wrap}
 .optgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-#wall{display:flex;flex-wrap:wrap;gap:4px;margin-top:16px;padding:14px;
-  background:var(--recessed);border-radius:6px;min-height:44px;align-content:flex-start}
-#wall i{width:30px;height:15px;border-radius:3px;display:block;border-bottom:3px solid rgba(0,0,0,.35)}
 
 footer{border-top:1px solid var(--hairline);margin-top:78px;padding:26px 0 44px}
 footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -366,13 +363,7 @@ footer a{color:var(--ink-2)}
     <div id="done" style="display:none;max-width:640px;margin-top:22px">
       <div style="background:var(--card);border-radius:7px;padding:18px 19px">
         <p style="font-size:15.5px;font-weight:500;color:var(--green);margin:0">Snapped in. Thank you.</p>
-        <p style="font-size:13px;line-height:1.5;color:var(--ink-2);margin:7px 0 0;max-width:56ch">Every response adds a brick.</p>
-        <div id="wall"></div>
-        <div class="specrow" style="grid-template-columns:repeat(3,1fr);margin-top:16px;border:1px solid var(--hairline);border-radius:6px;overflow:hidden">
-          <div><p>responses</p><p id="r-count">0</p></div>
-          <div><p>got it instantly</p><p id="r-got" style="color:var(--green)">0</p></div>
-          <div><p>most picked</p><p id="r-top" style="color:var(--red)">none</p></div>
-        </div>
+        <p style="font-size:13px;line-height:1.5;color:var(--ink-2);margin:7px 0 0;max-width:56ch">Your answer is with me. I read every one.</p>
         <button id="again" class="brick" style="margin-top:16px;background:var(--raised);color:var(--ink-2);font-size:12.5px;padding:10px 17px">Add another response</button>
       </div>
     </div>
@@ -825,8 +816,7 @@ paintQ();
    FEEDBACK FORM
    ============================================================ */
 var GOT=["Yes, instantly","Mostly","No"],
-    GOTC=["var(--green)","var(--yellow)","var(--red)"],
-    GOTHEX=["#6FCF97","#F5C400","#E23C3E"];
+    GOTC=["var(--green)","var(--yellow)","var(--red)"];
 var QSHORT=["01 · would it still feel like yours","02 · build it or receive it",
             "03 · what made you doubt","Something else"];
 var QFULL=["WOULD A SLIGHTLY WRONG MODEL STILL FEEL LIKE YOUR DOG?",
@@ -836,7 +826,7 @@ var QPLACE=["What would have to be right, and what could be off?",
             "Is the building the point, or the thing you end up with?",
             "The moment you got sceptical, not a summary.","Anything at all."];
 var BUY=["Buy the missing ones","Only what is in the box","Depends on the price"];
-var gotSel=-1,qSel=-1,buySel=-1,responses=[];
+var gotSel=-1,qSel=-1,buySel=-1;
 function mkOpts(host,labels,onPick){
   var made=[];
   labels.forEach(function(t,i){
@@ -877,7 +867,6 @@ document.getElementById("f-submit").addEventListener("click",function(){
     wants_to_make:document.getElementById("f-make").value.trim(),
     recognisable_or_stable:document.getElementById("f-expert").value.trim(),
     brick_threshold:threshold===null?"(not picked)":threshold+" bricks"};
-  responses.push({got:gotSel<0?1:gotSel,q:qSel<0?3:qSel});
   showResults();
   if(FORM_ENDPOINT.indexOf("REPLACE_WITH")===-1){
     fetch(FORM_ENDPOINT,{method:"POST",
@@ -886,16 +875,7 @@ document.getElementById("f-submit").addEventListener("click",function(){
 
 function showResults(){
   document.getElementById("form").style.display="none";
-  document.getElementById("done").style.display="block";
-  var wall=document.getElementById("wall");wall.innerHTML="";
-  responses.forEach(function(r){
-    var i=document.createElement("i");i.style.background=GOTHEX[r.got];wall.appendChild(i)});
-  var counts=[0,0,0,0];responses.forEach(function(r){counts[r.q]++});
-  var top=counts.indexOf(Math.max.apply(null,counts));
-  document.getElementById("r-count").textContent=responses.length;
-  document.getElementById("r-got").textContent=
-    responses.filter(function(r){return r.got===0}).length+" of "+responses.length;
-  document.getElementById("r-top").textContent=top<3?("Q0"+(top+1)):"other"}
+  document.getElementById("done").style.display="block"}
 document.getElementById("again").addEventListener("click",function(){
   document.getElementById("done").style.display="none";
   document.getElementById("form").style.display="block";
