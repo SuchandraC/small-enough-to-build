@@ -325,6 +325,7 @@ footer a{color:var(--ink-2)}
     <p class="label">FEEDBACK</p>
     <h2>Tell me where this is wrong.</h2>
     <p class="lede" style="max-width:52ch">Six questions, ninety seconds. What you write stays private, only the counts are shown.</p>
+    <p id="f-count" class="mono" style="display:none;font-size:11.5px;color:var(--ink-3);margin:9px 0 0"></p>
 
     <div id="form" style="margin-top:22px;max-width:640px">
       <div class="field">
@@ -386,6 +387,14 @@ footer a{color:var(--ink-2)}
    Blank this out and responses stay in the browser, uncollected.
    ============================================================ */
 var FORM_ENDPOINT = "https://formspree.io/f/meaolvwk";
+
+/* ============================================================
+   Google Apps Script web app URL, the one ending in /exec.
+   Keeps every reply in your private sheet and serves the public
+   answer count. See apps-script/SETUP.md.
+   Leave this blank and the count line simply stays hidden.
+   ============================================================ */
+var COUNT_ENDPOINT = "";
 
 (function(){
 "use strict";
@@ -857,6 +866,21 @@ function paintForm(){
        ta.placeholder="Pick a question above and this changes to it."}}
 paintForm();
 
+/* ---------- public answer count ----------
+   Only a number crosses the wire. The sheet holds the replies; doGet
+   never returns them. Any failure leaves the line hidden. */
+var answerCount=null;
+function paintCount(){
+  if(answerCount===null||answerCount<1)return;
+  var el=document.getElementById("f-count");
+  el.textContent=(answerCount===1?"1 person has":answerCount+" people have")+
+                 " answered so far.";
+  el.style.display="block"}
+if(COUNT_ENDPOINT){
+  fetch(COUNT_ENDPOINT).then(function(r){return r.json()}).then(function(d){
+    if(typeof d.count==="number"){answerCount=d.count;paintCount()}
+  }).catch(function(){})}
+
 document.getElementById("f-submit").addEventListener("click",function(){
   var payload={
     name:document.getElementById("f-name").value.trim()||"(anonymous)",
@@ -871,7 +895,14 @@ document.getElementById("f-submit").addEventListener("click",function(){
   if(FORM_ENDPOINT.indexOf("REPLACE_WITH")===-1){
     fetch(FORM_ENDPOINT,{method:"POST",
       headers:{"Content-Type":"application/json","Accept":"application/json"},
-      body:JSON.stringify(payload)}).catch(function(){})}});
+      body:JSON.stringify(payload)}).catch(function(){})}
+  if(COUNT_ENDPOINT){
+    /* text/plain keeps this a simple request. application/json would
+       trigger a CORS preflight, which Apps Script does not answer. */
+    fetch(COUNT_ENDPOINT,{method:"POST",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload)}).catch(function(){});
+    if(answerCount!==null){answerCount++;paintCount()}}});
 
 function showResults(){
   document.getElementById("form").style.display="none";

@@ -21,6 +21,10 @@ framework). It includes:
 - A short feedback form, because the project is still at the stage where the
   questions matter more than the answers
 
+`apps-script/` is optional and not part of the page: a small Google Apps
+Script that stores replies in a private sheet and serves back only the
+number of people who have answered. See [apps-script/SETUP.md](apps-script/SETUP.md).
+
 ## Running it locally
 
 Clone it and open `index.html` in a browser. That's the whole thing.
