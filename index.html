@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Small Enough to Build. Suchandra Chakraborty.</title>
+<meta name="description" content="Turning one photograph into a small, buildable brick model. A year long project, currently at the question stage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --chrome:#0B0C0E; --page:#14161A; --recessed:#101216; --card:#181B1F;
+  --hairline:#23272D; --raised:#1D2025;
+  --ink:#F2F4F7; --ink-2:#9AA1AB; --ink-3:#7D8590; --ink-4:#4A5058;
+  --red:#E23C3E; --red-wash:#1F1A1A; --red-line:#4A2224;
+  --blue:#3B82C4; --yellow:#F5C400; --yellow-wash:#1F1C16; --yellow-line:#4A3E1A;
+  --tan:#D9A05B; --green:#6FCF97;
+  --t:120ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);
+  font-family:'Space Grotesk',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.mono{font-family:'IBM Plex Mono','SF Mono',monospace}
+.wrap{max-width:1020px;margin:0 auto;padding:0 26px}
+section{padding:78px 0 0}
+.label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);letter-spacing:1.2px;margin:0}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:9.5px;border-radius:3px;padding:2px 7px}
+.headrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h1{font-size:clamp(30px,5.4vw,52px);line-height:1.02;letter-spacing:-1.8px;font-weight:500;margin:0}
+h2{font-size:clamp(21px,3.2vw,30px);line-height:1.12;letter-spacing:-1px;font-weight:500;margin:10px 0 0}
+p.lede{font-size:clamp(13.5px,1.5vw,15px);line-height:1.55;color:var(--ink-2);margin:11px 0 0;max-width:56ch}
+
+button{font-family:'Space Grotesk',sans-serif}
+.brick{border:none;border-bottom:4px solid rgba(0,0,0,.35);border-radius:5px;cursor:pointer;
+  transition:transform var(--t),background var(--t),border-color var(--t),color var(--t),filter var(--t)}
+.brick:active{transform:translateY(3px);border-bottom-width:1px}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{
+  outline:2px solid var(--yellow);outline-offset:2px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;background:rgba(16,18,22,.93);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--hairline)}
+.navrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.mark{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);flex:none}
+.mark i{width:9px;height:15px;border-radius:2px;display:block}
+.mark span{font-size:13px;font-weight:500;letter-spacing:-.3px}
+.links{display:flex;align-items:center;gap:15px}
+.links a{font-size:12px;color:var(--ink-3);text-decoration:none;padding-bottom:3px;
+  border-bottom:2px solid transparent;transition:color var(--t)}
+.links a:hover{color:var(--ink)}
+.links a.active{color:var(--ink);border-bottom-color:var(--red)}
+.cta{background:var(--red);color:#FFF3F2;font-size:12.5px;font-weight:500;
+  padding:8px 15px;text-decoration:none;display:inline-block}
+
+/* hero */
+.hero{padding-top:52px}
+.byline{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-3);margin:14px 0 0}
+.controls{display:flex;align-items:center;gap:8px;margin:22px 0 10px;flex-wrap:wrap}
+.controls .sp{flex:1}
+#hint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--yellow)}
+#stage{position:relative;height:414px;background:var(--recessed);border-radius:8px;
+  overflow:hidden;touch-action:none}
+#sv{position:absolute;left:0;top:0;cursor:grab}
+.binlbl{position:absolute;font-family:'IBM Plex Mono',monospace;font-size:9px;
+  color:var(--ink-3);margin:0;letter-spacing:.8px;pointer-events:none}
+.refs{position:absolute;display:flex;gap:6px;overflow-x:auto;max-width:100%;padding-bottom:2px}
+.refcard{width:88px;flex:none;cursor:pointer}
+.refcard .box{height:66px;background:var(--card);border:1px solid var(--hairline);
+  border-radius:5px;padding:3px}
+.refcard p{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);
+  margin:5px 0 0;text-align:center}
+.photoslot{border:1.5px dashed var(--yellow-line);border-radius:5px;background:#191A16;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.specs{margin-top:14px;border:1px solid var(--hairline);border-radius:6px;overflow:hidden}
+.specrow{display:grid;background:var(--card)}
+.specrow.b{background:var(--page)}
+.specrow>div{padding:10px 12px;border-right:1px solid var(--hairline)}
+.specrow>div:last-child{border-right:none}
+.specrow p:first-child{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--ink-3);margin:0}
+.specrow p:last-child{font-size:16px;font-weight:500;margin:2px 0 0}
+.specrow .who p{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;margin:0}
+
+/* generic grids */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:20px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}
+.cardbox{background:var(--card);border-radius:6px;padding:14px 15px}
+.callout{display:flex;align-items:center;gap:14px;margin-top:16px;border-left:3px solid var(--red);
+  background:var(--red-wash);border-radius:0 5px 5px 0;padding:14px 16px;flex-wrap:wrap}
+.callout.warm{border-left-color:var(--yellow);background:var(--yellow-wash);
+  justify-content:space-between}
+
+/* ladder */
+#row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px;
+  cursor:grab;touch-action:none}
+.pan .box{background:var(--recessed);border-radius:6px;padding:5px}
+.pan p{font-family:'IBM Plex Mono',monospace;margin:8px 0 0;text-align:center}
+.bar{margin-top:13px;background:var(--card);border-radius:6px;padding:13px 15px;
+  display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+
+/* pipeline */
+#pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:20px}
+.stagebtn{text-align:left;background:var(--card);border:none;border-bottom:3px solid var(--hairline);
+  border-radius:5px;padding:11px 10px;cursor:pointer;transition:all var(--t)}
+.stagebtn p:first-child{font-family:'IBM Plex Mono',monospace;font-size:9.5px;margin:0}
+.stagebtn p:last-child{font-size:11.5px;font-weight:500;margin:5px 0 0;line-height:1.2;color:var(--ink-2)}
+.bracket{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:6px}
+.detailwrap{display:grid;grid-template-columns:232px minmax(0,1fr);gap:16px;margin-top:14px;
+  background:var(--card);border-radius:6px;padding:15px 16px}
+#vis{background:var(--recessed);border-radius:5px;height:176px;display:flex;
+  align-items:center;justify-content:center;padding:6px}
+
+/* questions */
+.qcard{text-align:left;background:var(--card);border:none;border-bottom:3px solid var(--hairline);
+  border-radius:6px;padding:15px 16px;cursor:pointer;transition:all var(--t)}
+.qcard .q{font-size:15px;line-height:1.25;font-weight:500;color:var(--ink);margin:10px 0 0;letter-spacing:-.2px}
+.qcard .h{font-size:12px;line-height:1.45;color:var(--ink-3);margin:10px 0 0}
+
+/* form */
+.field{margin-bottom:17px}
+.field>p{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-3);margin:0 0 8px}
+input[type=text],textarea{width:100%;background:var(--recessed);border:1px solid var(--hairline);
+  border-radius:5px;padding:11px 13px;color:var(--ink);font-family:'Space Grotesk',sans-serif;
+  font-size:13.5px;outline:none;transition:border-color var(--t)}
+input[type=text]:focus,textarea:focus{border-color:var(--blue)}
+textarea{resize:vertical}
+.opt{text-align:left;background:var(--card);color:var(--ink-2);border:none;
+  border-bottom:3px solid var(--hairline);border-radius:5px;padding:11px 14px;
+  font-size:12.5px;cursor:pointer;transition:all var(--t)}
+.optrow{display:flex;gap:6px;flex-wrap:wrap}
+.optgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#wall{display:flex;flex-wrap:wrap;gap:4px;margin-top:16px;padding:14px;
+  background:var(--recessed);border-radius:6px;min-height:44px;align-content:flex-start}
+#wall i{width:30px;height:15px;border-radius:3px;display:block;border-bottom:3px solid rgba(0,0,0,.35)}
+
+footer{border-top:1px solid var(--hairline);margin-top:78px;padding:26px 0 44px}
+footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer a{color:var(--ink-2)}
+
+@media (max-width:900px){
+  .links a{display:none}
+  #pipe{grid-template-columns:repeat(3,1fr)}
+  .bracket{display:none}
+  .detailwrap{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 18px}
+  section{padding-top:54px}
+  #row{grid-template-columns:1fr 1fr}
+  .optgrid{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  #pipe{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{transition:none !important}
+  .brick:active,.qcard{transform:none !important}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap navrow">
+    <a class="mark" href="#top">
+      <span style="display:flex;gap:2px">
+        <i style="background:var(--red)"></i><i style="background:var(--blue)"></i><i style="background:var(--yellow)"></i>
+      </span>
+      <span>Small Enough to Build</span>
+    </a>
+    <div class="links">
+      <a href="#top" data-spy="top">The idea</a>
+      <a href="#question" data-spy="question">The question</a>
+      <a href="#ai" data-spy="ai">The AI</a>
+      <a href="#exists" data-spy="exists">What exists</a>
+      <a href="#found" data-spy="found">Near misses</a>
+      <a href="#questions" data-spy="questions">Questions</a>
+      <a class="cta brick" href="#feedback">Give feedback</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="top" class="hero">
+  <div class="wrap">
+    <h1>Anything you love.<br>Small enough to build.</h1>
+    <p class="lede" style="max-width:44ch">Send a photo. Get back a model you can build.</p>
+    <p class="byline">A project by Suchandra Chakraborty</p>
+
+    <div class="controls">
+      <span id="hint">layer 1 of 4</span>
+      <span class="sp"></span>
+      <span class="mono" style="font-size:10px;color:var(--ink-3)">drag the model to turn it</span>
+      <button id="b-reset" class="brick" style="font-size:11.5px;font-weight:500;color:var(--ink-2);background:var(--raised);padding:8px 12px 9px">Reset</button>
+    </div>
+
+    <div id="stage">
+      <svg id="sv"></svg>
+      <p id="binlbl" class="binlbl">PARTS BIN</p>
+      <div id="refs" class="refs"></div>
+      <p id="warn" class="mono" style="position:absolute;left:14px;top:14px;font-size:10.5px;color:var(--red);margin:0;opacity:0;transition:opacity 200ms;pointer-events:none">wrong part for that slot</p>
+    </div>
+
+    <div class="specs">
+      <div class="specrow" style="grid-template-columns:96px repeat(3,1fr)">
+        <div class="who"><p style="color:var(--yellow)">THIS DEMO</p></div>
+        <div><p>placed</p><p id="m-b">12 / 23</p></div>
+        <div><p>layer</p><p id="m-l">1 / 4</p></div>
+        <div><p>kinds of parts</p><p>3</p></div>
+      </div>
+      <div class="specrow b" style="grid-template-columns:96px repeat(4,1fr);border-top:1px solid var(--hairline)">
+        <div class="who"><p style="color:var(--ink-2)">A REAL<br>BUILD</p></div>
+        <div><p>bricks</p><p>71</p></div>
+        <div><p>parts cost</p><p>$8.40</p></div>
+        <div><p>build time</p><p>20 min</p></div>
+        <div><p>kinds of parts</p><p>5</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE QUESTION -->
+<section id="question">
+  <div class="wrap">
+    <p class="label">THE QUESTION</p>
+    <h2 style="max-width:26ch">How small can something get before it stops looking like itself?</h2>
+    <p class="lede">A photograph holds millions of values. A twenty three brick dog holds twenty three decisions. Everything else gets thrown away, and what survives the throwing away is the part worth arguing about.</p>
+    <div id="row"></div>
+    <div class="bar">
+      <span id="lmsg" style="font-size:13px;color:var(--ink-2);flex:1;min-width:220px">Drag any of them to turn all four. Which one stops being your dog?</span>
+    </div>
+  </div>
+</section>
+
+<!-- WHERE THE AI IS -->
+<section id="ai">
+  <div class="wrap">
+    <div class="headrow">
+      <p class="label">WHERE THE AI HAS TO BE</p>
+      <span class="tag" style="color:var(--yellow);border:1px solid var(--yellow-line)">hypothesis</span>
+    </div>
+    <h2 style="max-width:30ch">The hard part is the part the photo never showed you.</h2>
+    <p class="lede" style="max-width:50ch">Two of these six steps need a generative model. The rest is ordinary engineering.</p>
+    <div id="pipe"></div>
+    <div class="bracket">
+      <div style="grid-column:1 / span 2"></div>
+      <div style="grid-column:3 / span 2;border-top:2px solid var(--red);padding-top:6px">
+        <p class="mono" style="font-size:9.5px;color:var(--red);margin:0;text-align:center">the intrinsic AI</p>
+      </div>
+    </div>
+    <div class="detailwrap">
+      <div id="vis"></div>
+      <div id="detail"></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT EXISTS TODAY -->
+<section id="exists">
+  <div class="wrap">
+    <div class="headrow">
+      <p class="label">WHAT EXISTS TODAY</p>
+      <span class="tag" style="color:var(--green);border:1px solid #2E4A3A">v1, working</span>
+    </div>
+    <h2 style="max-width:28ch">I have the flat one. The project is the other one.</h2>
+    <p class="lede" style="max-width:52ch">A photo goes in, a studded panel comes out with a parts list and a rough cost. It works. It is also a picture.</p>
+
+    <div class="g3" style="align-items:end">
+      <div>
+        <!-- REPLACE with your real input photo: <img src="img/input.jpg" style="width:100%;aspect-ratio:8/7;object-fit:cover;border-radius:6px"> -->
+        <div id="photopanel" style="aspect-ratio:8/7;border-radius:6px;overflow:hidden;background:#1B2027"></div>
+        <p class="mono" style="font-size:10.5px;color:var(--ink);margin:9px 0 0">the photo</p>
+        <p class="mono" style="font-size:9.5px;color:var(--ink-3);margin:3px 0 0">one angle, one side</p>
+      </div>
+      <div>
+        <!-- REPLACE with your real mosaic screenshot -->
+        <div id="mos" style="aspect-ratio:8/7;background:#0C0E11;border-radius:6px;padding:4px;display:grid;gap:1px"></div>
+        <p class="mono" style="font-size:10.5px;color:var(--green);margin:9px 0 0">flat, <span id="tilect">224</span> tiles</p>
+        <p class="mono" style="font-size:9.5px;color:var(--ink-3);margin:3px 0 0">built and working</p>
+      </div>
+      <div>
+        <div style="aspect-ratio:8/7;background:var(--recessed);border:1.5px dashed var(--red-line);border-radius:6px;padding:4px">
+          <svg id="solid" style="width:100%;height:100%;display:block"></svg>
+        </div>
+        <p class="mono" style="font-size:10.5px;color:var(--red);margin:9px 0 0">solid, 23 bricks</p>
+        <p class="mono" style="font-size:9.5px;color:var(--ink-3);margin:3px 0 0">not built yet</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <p style="font-size:13.5px;line-height:1.5;color:var(--ink);margin:0;max-width:60ch">
+        <span style="color:var(--red)">More pieces, less object.</span>
+        The flat version needs ten times the parts to say less than the solid one does, and you cannot pick it up.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEAR MISSES -->
+<section id="found">
+  <div class="wrap">
+    <div class="headrow">
+      <p class="label">WHAT I HAVE FOUND SO FAR</p>
+      <span class="tag" style="color:var(--yellow);border:1px solid var(--yellow-line)">early, incomplete</span>
+    </div>
+    <h2>Three near misses.</h2>
+    <p class="lede" style="max-width:54ch">Two weeks of looking, not a literature review. I have not found photo to buildable model anywhere.</p>
+    <div id="cards" class="g3"></div>
+  </div>
+</section>
+
+<!-- OPEN QUESTIONS -->
+<section id="questions">
+  <div class="wrap">
+    <p class="label">THE QUESTIONS I AM STUCK ON</p>
+    <h2 style="max-width:28ch">I am at the question stage, not the answer stage.</h2>
+    <p class="lede">Pick the one you have something to say about.</p>
+    <div id="qgrid" class="g3"></div>
+  </div>
+</section>
+
+<!-- FEEDBACK -->
+<section id="feedback">
+  <div class="wrap">
+    <p class="label">FEEDBACK</p>
+    <h2>Tell me where this is wrong.</h2>
+    <p class="lede" style="max-width:52ch">Six questions, ninety seconds. What you write stays private, only the counts are shown.</p>
+
+    <div id="form" style="margin-top:22px;max-width:640px">
+      <div class="field">
+        <p>01 · YOUR NAME <span style="color:var(--ink-4)">optional, leave blank to be blunt</span></p>
+        <input id="f-name" type="text" autocomplete="off">
+      </div>
+      <div class="field">
+        <p>02 · DID YOU GET IT IN THE FIRST TEN SECONDS?</p>
+        <div id="f-got" class="optrow"></div>
+      </div>
+      <div class="field">
+        <p>03 · WHICH QUESTION DO YOU HAVE SOMETHING TO SAY ABOUT?</p>
+        <div id="f-q" class="optgrid"></div>
+      </div>
+      <div class="field">
+        <p>04 · <span id="f-qlabel" style="color:var(--ink-2)">ANYTHING YOU WANT TO SAY</span></p>
+        <textarea id="f-answer" rows="3" placeholder="Pick a question above and this changes to it."></textarea>
+      </div>
+      <div class="field">
+        <p>05 · WOULD YOU BUY THE MISSING BRICKS?</p>
+        <div id="f-buy" class="optrow"></div>
+      </div>
+      <div class="field">
+        <p>06 · WHAT WOULD YOU WANT TO MAKE?</p>
+        <input id="f-make" type="text" placeholder="my cat, my bike, my grandmother's house" autocomplete="off">
+      </div>
+      <div style="margin-bottom:18px;border:1px solid var(--hairline);border-radius:5px;padding:12px 14px">
+        <p class="mono" style="font-size:9.5px;color:var(--ink-4);margin:0 0 7px">OPTIONAL, IF YOU WORK WITH 3D RECONSTRUCTION OR STRUCTURES</p>
+        <p style="font-size:12.5px;color:var(--ink-2);margin:0 0 8px">Which half is harder: making it recognisable, or making it stand up?</p>
+        <input id="f-expert" type="text" autocomplete="off" style="font-size:12.5px;padding:9px 12px">
+      </div>
+      <button id="f-submit" class="brick" style="background:var(--red);color:#FFF3F2;font-size:14px;font-weight:500;padding:13px 24px;border-radius:6px">Snap it in</button>
+      <p id="f-note" class="mono" style="font-size:10px;color:var(--ink-4);margin:12px 0 0"></p>
+    </div>
+
+    <div id="done" style="display:none;max-width:640px;margin-top:22px">
+      <div style="background:var(--card);border-radius:7px;padding:18px 19px">
+        <p style="font-size:15.5px;font-weight:500;color:var(--green);margin:0">Snapped in. Thank you.</p>
+        <p style="font-size:13px;line-height:1.5;color:var(--ink-2);margin:7px 0 0;max-width:56ch">Every response adds a brick. This wall is the only part of the site I did not design.</p>
+        <div id="wall"></div>
+        <div class="specrow" style="grid-template-columns:repeat(3,1fr);margin-top:16px;border:1px solid var(--hairline);border-radius:6px;overflow:hidden">
+          <div><p>responses</p><p id="r-count">0</p></div>
+          <div><p>got it instantly</p><p id="r-got" style="color:var(--green)">0</p></div>
+          <div><p>most picked</p><p id="r-top" style="color:var(--red)">none</p></div>
+        </div>
+        <button id="again" class="brick" style="margin-top:16px;background:var(--raised);color:var(--ink-2);font-size:12.5px;padding:10px 17px">Add another response</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <div>
+      <p class="mono" style="font-size:11px;color:var(--ink-2);margin:0">Small Enough to Build. Suchandra Chakraborty.</p>
+      <p class="mono" style="font-size:11px;color:var(--ink-3);margin:6px 0 0">Week 2. Still deciding what the question is.</p>
+    </div>
+    <p class="mono" style="font-size:11px;margin:0"><a href="#">Read the full proposal</a></p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Paste your Formspree endpoint here. Free form at formspree.io.
+   Until you do, responses stay in the browser and are not collected.
+   ============================================================ */
+var FORM_ENDPOINT = "https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID";
+
+(function(){
+"use strict";
+var RM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- shared brick renderer ---------- */
+var PITCH=15, SINF=0.5, COSF=0.866, BH=1.2;
+var HEX={tan:[217,160,91],red:[226,60,62],dark:[71,77,86],
+         grey:[126,133,143],flat:[74,80,88],mark:[245,196,0]};
+function shade(c,f){return "rgb("+Math.min(255,Math.round(c[0]*f))+","+
+  Math.min(255,Math.round(c[1]*f))+","+Math.min(255,Math.round(c[2]*f))+")"}
+function proj(x,y,zs,t){
+  return [(x*Math.cos(t)-y*Math.sin(t))*PITCH,
+          (x*Math.sin(t)+y*Math.cos(t))*PITCH*SINF - zs*PITCH*COSF]}
+function corners(b){
+  var x0=b.x,x1=b.x+b.w,y0=b.y,y1=b.y+b.d,z0=b.z*BH,z1=(b.z+(b.h||1))*BH;
+  return [
+   {n:[0,0,1], p:[[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]], top:1},
+   {n:[1,0,0], p:[[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1]]},
+   {n:[-1,0,0],p:[[x0,y1,z0],[x0,y0,z0],[x0,y0,z1],[x0,y1,z1]]},
+   {n:[0,1,0], p:[[x1,y1,z0],[x0,y1,z0],[x0,y1,z1],[x1,y1,z1]]},
+   {n:[0,-1,0],p:[[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]]}]}
+function cam(t){return [Math.sin(t)*COSF, Math.cos(t)*COSF, SINF]}
+function rightv(t){return [Math.cos(t), -Math.sin(t), 0]}
+function depth(b,t){var c=cam(t);
+  return (b.x+b.w/2)*c[0]+(b.y+b.d/2)*c[1]+((b.z+(b.h||1)/2)*BH)*c[2]}
+function brick(b,ox,oy,t,o){
+  o=o||{};
+  var base=HEX[b.c], C=cam(t), R=rightv(t), out="";
+  corners(b).forEach(function(f){
+    if(f.n[0]*C[0]+f.n[1]*C[1]+f.n[2]*C[2] <= 0.001)return;
+    var str=f.p.map(function(q){var s=proj(q[0],q[1],q[2],t);
+      return (s[0]+ox).toFixed(1)+","+(s[1]+oy).toFixed(1)}).join(" ");
+    if(o.mode==="flat"){out+='<polygon points="'+str+'" fill="'+shade(HEX.flat,1)+'"/>';return}
+    if(o.mode==="volume"){
+      var g=f.top?1.03:0.58-0.15*(f.n[0]*R[0]+f.n[1]*R[1]);
+      out+='<polygon points="'+str+'" fill="'+shade(HEX.grey,g)+'"'+
+        (o.seams?' stroke="#101216" stroke-width="0.6"':'')+'/>';return}
+    if(f.top){
+      if(o.ghost){out+='<polygon points="'+str+'" fill="#181B20" stroke="#474E58" stroke-width="1.3" stroke-dasharray="4 3"/>';return}
+      out+='<polygon points="'+str+'" fill="'+shade(base,1.20)+'" stroke="'+shade(base,0.85)+'" stroke-width="0.6"/>'}
+    else{if(o.ghost)return;
+      var lr=-(f.n[0]*R[0]+f.n[1]*R[1]);
+      out+='<polygon points="'+str+'" fill="'+shade(base,0.52+0.30*lr)+'"/>'}});
+  if(o.ghost||o.mode==="flat"||o.mode==="volume")return out;
+  var sr=b.deco?PITCH*0.19:PITCH*0.30, sh=b.deco?1.6:2.9;
+  for(var i=0;i<b.w;i++)for(var j=0;j<b.d;j++){
+    var s=proj(b.x+i+.5,b.y+j+.5,(b.z+(b.h||1))*BH,t),cx=s[0]+ox,cy=s[1]+oy;
+    out+='<ellipse cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" rx="'+sr.toFixed(1)+'" ry="'+(sr*SINF).toFixed(1)+'" fill="'+shade(base,0.72)+'"/>'+
+      '<rect x="'+(cx-sr).toFixed(1)+'" y="'+(cy-sh).toFixed(1)+'" width="'+(sr*2).toFixed(1)+'" height="'+sh+'" fill="'+shade(base,0.90)+'"/>'+
+      '<ellipse cx="'+cx.toFixed(1)+'" cy="'+(cy-sh).toFixed(1)+'" rx="'+sr.toFixed(1)+'" ry="'+(sr*SINF).toFixed(1)+'" fill="'+shade(base,1.26)+'" stroke="'+shade(base,0.88)+'" stroke-width="0.7"/>'}
+  return out}
+function bbox(list,t){var xs=[],ys=[];
+  list.forEach(function(b){corners(b).forEach(function(f){f.p.forEach(function(q){
+    var s=proj(q[0],q[1],q[2],t);xs.push(s[0]);ys.push(s[1]-4)})})});
+  return [Math.min.apply(null,xs),Math.min.apply(null,ys),Math.max.apply(null,xs),Math.max.apply(null,ys)]}
+function svgOf(list,t,opts,frame,height){
+  var bb=bbox(frame||list,t),pad=(opts&&opts.pad)||7;
+  return '<svg viewBox="'+(bb[0]-pad).toFixed(1)+' '+(bb[1]-pad).toFixed(1)+' '+
+    (bb[2]-bb[0]+pad*2).toFixed(1)+' '+(bb[3]-bb[1]+pad*2).toFixed(1)+
+    '" style="width:100%;'+(height?'height:'+height+'px;':'height:100%;')+'display:block">'+
+    list.slice().sort(function(p,q){return depth(p,t)-depth(q,t)})
+      .map(function(b){return brick(b,0,0,t,opts||{})}).join("")+'</svg>'}
+
+/* ---------- the models. every footprint is a real part: 1x1, 1x3, 2x3 ---------- */
+var PLATE={x:0,y:-1,w:10,d:5,z:-0.34,h:0.34,c:"grey",deco:1};
+var A=[
+ {x:1,y:0,w:1,d:1,z:0,c:"tan",lock:1},{x:1,y:2,w:1,d:1,z:0,c:"tan",lock:1},
+ {x:8,y:0,w:1,d:1,z:0,c:"tan",lock:1},{x:8,y:2,w:1,d:1,z:0,c:"tan",lock:1},
+ {x:1,y:0,w:1,d:1,z:1,c:"tan",lock:1},{x:1,y:2,w:1,d:1,z:1,c:"tan",lock:1},
+ {x:8,y:0,w:1,d:1,z:1,c:"tan",lock:1},{x:8,y:2,w:1,d:1,z:1,c:"tan",lock:1},
+ {x:1,y:0,w:2,d:3,z:2,c:"tan",lock:1},{x:3,y:0,w:2,d:3,z:2,c:"tan",lock:1,span:1},
+ {x:5,y:0,w:2,d:3,z:2,c:"tan",lock:1,span:1},{x:7,y:0,w:2,d:3,z:2,c:"tan",lock:1},
+ {x:1,y:0,w:2,d:3,z:3,c:"tan"},{x:3,y:0,w:1,d:3,z:3,c:"red"},
+ {x:4,y:0,w:2,d:3,z:3,c:"tan"},{x:6,y:0,w:2,d:3,z:3,c:"tan"},
+ {x:8,y:0,w:1,d:3,z:3,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:4,c:"tan"},{x:8,y:1,w:1,d:1,z:4,c:"tan"},
+ {x:1,y:0,w:1,d:3,z:5,c:"dark"},{x:2,y:0,w:1,d:3,z:5,c:"tan"},
+ {x:2,y:0,w:1,d:1,z:6,c:"dark"},{x:2,y:2,w:1,d:1,z:6,c:"dark"}];
+var B=[
+ {x:1,y:0,w:1,d:1,z:0,c:"tan"},{x:1,y:2,w:1,d:1,z:0,c:"tan"},
+ {x:8,y:0,w:1,d:1,z:0,c:"tan"},{x:8,y:2,w:1,d:1,z:0,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:1,c:"tan"},{x:3,y:0,w:2,d:3,z:1,c:"tan"},
+ {x:5,y:0,w:2,d:3,z:1,c:"tan"},{x:7,y:0,w:2,d:3,z:1,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:2,c:"tan"},{x:3,y:0,w:1,d:3,z:2,c:"red"},
+ {x:4,y:0,w:2,d:3,z:2,c:"tan"},{x:6,y:0,w:2,d:3,z:2,c:"tan"},
+ {x:8,y:0,w:1,d:3,z:2,c:"tan"},{x:1,y:0,w:2,d:3,z:3,c:"tan"}];
+var C4=[
+ {x:1,y:1,w:1,d:1,z:0,c:"tan"},{x:8,y:1,w:1,d:1,z:0,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:1,c:"tan"},{x:3,y:0,w:2,d:3,z:1,c:"tan"},
+ {x:5,y:0,w:2,d:3,z:1,c:"tan"},{x:7,y:0,w:2,d:3,z:1,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:2,c:"tan"},{x:3,y:0,w:1,d:3,z:2,c:"red"}];
+var D=[
+ {x:1,y:0,w:1,d:3,z:0,c:"tan"},{x:5,y:0,w:1,d:3,z:0,c:"tan"},
+ {x:1,y:0,w:2,d:3,z:1,c:"tan"},{x:3,y:0,w:2,d:3,z:1,c:"tan"},
+ {x:5,y:0,w:1,d:3,z:1,c:"tan"},{x:1,y:0,w:1,d:3,z:2,c:"tan"}];
+var VOX=[];
+A.forEach(function(b){for(var i=0;i<b.w;i++)for(var j=0;j<b.d;j++)
+  VOX.push({x:b.x+i,y:b.y+j,w:1,d:1,z:b.z,c:"grey"})});
+var MARKED=A.map(function(b){
+  return {x:b.x,y:b.y,w:b.w,d:b.d,z:b.z,c:b.span?"mark":b.c}});
+function partName(b){return Math.min(b.w,b.d)+"x"+Math.max(b.w,b.d)}
+
+/* support audit: nothing may float */
+(function(){
+  var bad=[];
+  [["hero",A],["14",B],["8",C4],["6",D]].forEach(function(pair){
+    pair[1].forEach(function(b){
+      if(b.z===0)return;
+      var ok=pair[1].some(function(o){return o.z===b.z-1&&b.x<o.x+o.w&&o.x<b.x+b.w&&b.y<o.y+o.d&&o.y<b.y+b.d});
+      if(!ok)bad.push(pair[0]+" "+partName(b)+" at "+b.x+","+b.y+","+b.z)})});
+  if(bad.length)console.warn("unsupported bricks:",bad.join("; "));
+  else console.log("support audit passed for all four models")})();
+
+/* ============================================================
+   HERO BUILDER
+   ============================================================ */
+var LAYERS=[3,4,5,6], LOCKED=12, TOTAL=A.length;
+var th=0.72, done={}, W=640, H=414, OX=0, OY=0, junk=[], wt, narrow=false;
+var stage=document.getElementById("stage"), sv=document.getElementById("sv"),
+    hint=document.getElementById("hint"), warn=document.getElementById("warn"),
+    binlbl=document.getElementById("binlbl"), refsEl=document.getElementById("refs");
+
+function layout(){
+  narrow = W < 680;
+  stage.style.height = (narrow?470:414)+"px";
+  H = narrow?470:414;
+  if(narrow){
+    binlbl.style.cssText="position:absolute;left:12px;top:12px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);margin:0;letter-spacing:.8px;pointer-events:none";
+    refsEl.style.cssText="position:absolute;left:12px;right:12px;bottom:10px;display:flex;gap:6px;overflow-x:auto"}
+  else{
+    binlbl.style.cssText="position:absolute;right:10px;top:14px;width:130px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-3);margin:0;letter-spacing:.8px;pointer-events:none";
+    refsEl.style.cssText="position:absolute;left:10px;bottom:10px;display:flex;gap:6px;overflow-x:auto;max-width:"+(W-160)+"px"}}
+function binSlot(i){
+  return narrow ? [12+(i%3)*66, 30+Math.floor(i/3)*50]
+                : [W-136+(i%2)*66, 34+Math.floor(i/2)*50]}
+function modelBox(){
+  return narrow ? {cx:W/2, cy:(132+(H-104))/2} : {cx:(W-150)/2, cy:(H-104)/2}}
+function activeLayer(){
+  for(var i=0;i<LAYERS.length;i++){var z=LAYERS[i];
+    if(A.some(function(b,k){return b.z===z&&!b.lock&&!done[k]}))return z}
+  return null}
+function slotCentre(b){var s=proj(b.x+b.w/2,b.y+b.d/2,(b.z+1)*BH,th);return [s[0]+OX,s[1]+OY]}
+
+function drawHero(){
+  layout();
+  var all=[PLATE].concat(A), bb=bbox(all,th), mb=modelBox();
+  OX=mb.cx-(bb[0]+bb[2])/2; OY=mb.cy-(bb[1]+bb[3])/2;
+  sv.setAttribute("width",W);sv.setAttribute("height",H);
+  var az=activeLayer(), vis=[{b:PLATE,g:0}];
+  A.forEach(function(b,k){
+    if(b.lock||done[k])vis.push({b:b,g:0});
+    else if(b.z===az)vis.push({b:b,g:1})});
+  vis.sort(function(p,q){return depth(p.b,th)-depth(q.b,th)});
+  sv.innerHTML=vis.map(function(it){return brick(it.b,OX,OY,th,{ghost:it.g})}).join("");
+  document.getElementById("m-b").textContent=(LOCKED+Object.keys(done).length)+" / "+TOTAL;
+  document.getElementById("m-l").textContent=(az===null?4:LAYERS.indexOf(az)+1)+" / 4";
+  if(az===null){hint.textContent="twenty three real parts, four layers, nothing floating";
+    hint.style.color="var(--green)"}
+  else{var n=A.filter(function(b,k){return b.z===az&&!b.lock&&!done[k]}).length;
+    hint.textContent="layer "+(LAYERS.indexOf(az)+1)+" of 4, "+n+" part"+(n===1?"":"s")+" left";
+    hint.style.color="var(--yellow)"}
+  buildRefs();buildBin(az)}
+
+function buildRefs(){
+  var views=[[0.72,"front"],[2.3,"side"],[3.9,"back"]];
+  var h='<div class="refcard" style="cursor:default"><div class="box" style="padding:0;overflow:hidden;background:#1B2027">'+
+    dogPhoto()+'</div><p style="color:var(--yellow)">the photo</p></div>';
+  views.forEach(function(v){
+    h+='<div class="refcard" data-t="'+v[0]+'"><div class="box">'+
+      svgOf([PLATE].concat(A),v[0],{},null)+'</div><p>'+v[1]+'</p></div>'});
+  refsEl.innerHTML=h;
+  [].forEach.call(refsEl.querySelectorAll(".refcard[data-t]"),function(c){
+    c.addEventListener("click",function(){th=+c.dataset.t;drawHero()})})}
+
+function buildBin(az){
+  junk.forEach(function(t){t.remove()});junk=[];
+  binlbl.style.display=az===null?"none":"block";
+  if(az===null)return;
+  var rem=[];A.forEach(function(b,k){if(b.z===az&&!b.lock&&!done[k])rem.push(k)});
+  rem.forEach(function(k,i){
+    var b=A[k],s=binSlot(i);
+    var card=document.createElement("div");
+    card.style.cssText="position:absolute;left:"+s[0]+"px;top:"+s[1]+"px;width:62px;height:46px;"+
+      "background:var(--card);border:1px solid var(--hairline);border-radius:5px;pointer-events:none";
+    card.innerHTML='<p class="mono" style="position:absolute;right:5px;bottom:3px;margin:0;font-size:8.5px;color:var(--ink-3)">'+partName(b)+'</p>';
+    stage.appendChild(card);junk.push(card);
+    var sp=document.createElement("div");
+    sp.style.cssText="position:absolute;left:"+(s[0]+3)+"px;top:"+(s[1]+2)+"px;width:56px;height:34px;"+
+      "cursor:grab;touch-action:none;z-index:6";
+    sp.innerHTML=svgOf([{x:0,y:0,w:b.w,d:b.d,z:0,c:b.c}],0.72,{pad:3},null);
+    stage.appendChild(sp);junk.push(sp);
+    dragPiece(sp,k,i)})}
+
+function flash(){clearTimeout(wt);warn.style.opacity="1";
+  wt=setTimeout(function(){warn.style.opacity="0"},1500)}
+
+function dragPiece(el,k,idx){
+  el.addEventListener("pointerdown",function(ev){
+    ev.preventDefault();ev.stopPropagation();el.setPointerCapture(ev.pointerId);
+    var r=stage.getBoundingClientRect(),L=parseFloat(el.style.left),T=parseFloat(el.style.top),
+        sx=ev.clientX,sy=ev.clientY;
+    el.style.zIndex=30;el.style.cursor="grabbing";
+    function mv(m){el.style.left=(L+m.clientX-sx)+"px";el.style.top=(T+m.clientY-sy)+"px"}
+    function up(m){
+      el.removeEventListener("pointermove",mv);el.removeEventListener("pointerup",up);
+      var px=m.clientX-r.left,py=m.clientY-r.top,az=activeLayer(),best=-1,bd=1e9;
+      A.forEach(function(b,j){
+        if(b.z!==az||b.lock||done[j])return;
+        var c=slotCentre(b),dd=Math.sqrt((px-c[0])*(px-c[0])+(py-c[1])*(py-c[1]));
+        if(dd<bd){bd=dd;best=j}});
+      if(best>=0&&bd<48){
+        var t=A[best],s=A[k];
+        if(t.w===s.w&&t.d===s.d&&t.c===s.c){done[best]=1;drawHero();return}
+        flash()}
+      var h=binSlot(idx);el.style.left=(h[0]+3)+"px";el.style.top=(h[1]+2)+"px";
+      el.style.zIndex=6;el.style.cursor="grab"}
+    el.addEventListener("pointermove",mv);el.addEventListener("pointerup",up)})}
+
+sv.addEventListener("pointerdown",function(ev){
+  sv.setPointerCapture(ev.pointerId);sv.style.cursor="grabbing";
+  var sx=ev.clientX,t0=th;
+  function mv(m){th=t0+(m.clientX-sx)*0.011;drawHero()}
+  function up(){sv.removeEventListener("pointermove",mv);sv.removeEventListener("pointerup",up);
+    sv.style.cursor="grab"}
+  sv.addEventListener("pointermove",mv);sv.addEventListener("pointerup",up)});
+document.getElementById("b-reset").addEventListener("click",function(){done={};th=0.72;drawHero()});
+
+/* ============================================================
+   LADDER
+   ============================================================ */
+var LAD=[{m:A,n:23,v:"obviously your dog",c:"var(--green)"},
+         {m:B,n:14,v:"still your dog",c:"var(--green)"},
+         {m:C4,n:8,v:"some kind of animal",c:"var(--yellow)"},
+         {m:D,n:6,v:"just a shape",c:"var(--red)"}];
+var lth=0.72, lsel=-1, lmoved=false, threshold=null;
+var row=document.getElementById("row"), lmsg=document.getElementById("lmsg");
+function drawLadder(){
+  row.innerHTML=LAD.map(function(M,i){
+    var on=i===lsel;
+    return '<div class="pan" data-i="'+i+'"><div class="box" style="'+
+      (on?'outline:2px solid '+M.c+';outline-offset:-1px':'')+'">'+
+      svgOf(M.m,lth,{pad:8},A,150)+'</div>'+
+      '<p style="font-size:11px;color:var(--ink)">'+M.n+' bricks</p>'+
+      '<p style="font-size:9.5px;color:'+M.c+'">'+M.v+'</p></div>'}).join("");
+  [].forEach.call(row.querySelectorAll(".pan"),function(p){
+    p.addEventListener("click",function(){
+      if(lmoved)return;
+      lsel=+p.dataset.i;threshold=LAD[lsel].n;
+      lmsg.textContent="You say it survives down to "+threshold+" bricks. That is the number I am collecting.";
+      lmsg.style.color="var(--ink)";
+      drawLadder()})})}
+row.addEventListener("pointerdown",function(ev){
+  row.setPointerCapture(ev.pointerId);row.style.cursor="grabbing";
+  var sx=ev.clientX,t0=lth;lmoved=false;
+  function mv(m){if(Math.abs(m.clientX-sx)>3)lmoved=true;lth=t0+(m.clientX-sx)*0.011;drawLadder()}
+  function up(){row.removeEventListener("pointermove",mv);row.removeEventListener("pointerup",up);
+    row.style.cursor="grab";setTimeout(function(){lmoved=false},60)}
+  row.addEventListener("pointermove",mv);row.addEventListener("pointerup",up)});
+drawLadder();
+
+/* ============================================================
+   PIPELINE
+   ============================================================ */
+function dogArt(flat){
+  var body  = flat?"#59616B":"#D9A05B",
+      shade = flat?"#59616B":"#B8853F",
+      dark  = flat?"#59616B":"#33383F",
+      coll  = flat?"#59616B":"#E23C3E",
+      bg    = flat?"#101216":"#1B2027";
+  return '<svg viewBox="0 0 120 100" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;display:block" role="img" aria-label="'+(flat?"The same dog as a flat cut out silhouette":"Illustration of a dog in profile wearing a red collar")+'">'+
+   '<rect width="120" height="100" fill="'+bg+'"/>'+
+   (flat?'':'<ellipse cx="60" cy="86" rx="42" ry="5" fill="#14171C"/>')+
+   '<path d="M92 44 Q106 38 102 21" stroke="'+shade+'" stroke-width="7" fill="none" stroke-linecap="round"/>'+
+   '<rect x="72" y="60" width="9" height="25" rx="4.5" fill="'+shade+'"/>'+
+   '<rect x="40" y="60" width="9" height="25" rx="4.5" fill="'+shade+'"/>'+
+   '<rect x="84" y="60" width="9" height="25" rx="4.5" fill="'+body+'"/>'+
+   '<rect x="52" y="60" width="9" height="25" rx="4.5" fill="'+body+'"/>'+
+   '<ellipse cx="65" cy="52" rx="30" ry="18" fill="'+body+'"/>'+
+   '<rect x="48" y="36" width="7" height="23" rx="3.5" fill="'+coll+'"/>'+
+   '<path d="M28 28 Q28 9 43 16 Q41 29 33 32 Z" fill="'+shade+'"/>'+
+   '<circle cx="36" cy="38" r="15" fill="'+body+'"/>'+
+   '<rect x="13" y="39" width="26" height="15" rx="7.5" fill="'+body+'"/>'+
+   (flat?'':'<circle cx="16" cy="44" r="3.6" fill="'+dark+'"/>'+
+            '<circle cx="34" cy="34" r="2.3" fill="'+dark+'"/>')+
+   '</svg>'}
+function dogPhoto(){return dogArt(false)}
+function dogMask(){return dogArt(true)}
+function photoSlot(){
+  return '<div style="width:100%;height:100%;border-radius:5px;overflow:hidden;background:#1B2027">'+dogPhoto()+'</div>'}
+function partsList(){
+  var rows=[["2x3",8,"var(--tan)",22],["1x1",11,"var(--tan)",10],["1x3",4,"var(--red)",16]];
+  return '<div style="width:100%;padding:4px 8px">'+rows.map(function(r){
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--raised)">'+
+      '<span style="display:flex;align-items:center;gap:8px">'+
+      '<span style="width:'+r[3]+'px;height:10px;border-radius:2px;background:'+r[2]+'"></span>'+
+      '<span class="mono" style="font-size:10.5px;color:var(--ink-2)">'+r[0]+'</span></span>'+
+      '<span class="mono" style="font-size:10.5px;color:var(--ink)">'+r[1]+'</span></div>'}).join("")+
+    '<p class="mono" style="font-size:9.5px;color:var(--ink-3);margin:9px 0 0">23 pieces, 3 kinds of parts</p></div>'}
+var STAGES=[
+ {n:"01",t:"Take a photo",k:0,head:"No AI here.",
+  body:"A phone, pointed at a dog.",meta:"plain input",vis:photoSlot},
+ {n:"02",t:"Find the subject",k:0,head:"AI, but not mine.",
+  body:"Same picture, background gone, subject flattened to one shape. Solved problem. I will use something off the shelf.",
+  meta:"off the shelf segmentation",vis:function(){return '<div style="width:100%;height:100%;border-radius:5px;overflow:hidden;background:#101216">'+dogMask()+'</div>'}},
+ {n:"03",t:"Infer the 3D form",k:1,head:"Invent the side you cannot see.",
+  body:"One photo, one angle. The system has to commit to a back and a volume it has never seen. What comes out is shape, not parts.",
+  meta:"shape, no parts yet",vis:function(){return svgOf(VOX,0.72,{mode:"volume",seams:1},A)}},
+ {n:"04",t:"Choose the parts",k:1,head:"Spend the budget on what matters.",
+  body:"The same volume, now described as parts the system picks from a catalogue of shapes that exist. Nobody supplies it with bricks. At twenty three parts, what makes this dog this dog? Two people would answer differently and both could be right.",
+  meta:"the person sets the size, the model decides what to keep. for now",vis:function(){return svgOf(A,0.72,{},A)}},
+ {n:"05",t:"Make it stand up",k:2,head:"Touching is not standing.",
+  body:"The builder above checks that bricks rest on something. Nothing in it knows about weight or balance. LegoGPT found stability has to be enforced while building, not checked at the end.",
+  meta:"claim to verify against the paper",vis:function(){return svgOf(MARKED,0.72,{},A)}},
+ {n:"06",t:"Parts and steps",k:0,head:"No AI here either.",
+  body:"Look up, add up, order the build so nothing floats. Ordinary code.",
+  meta:"lookup and sequencing",vis:partsList}];
+var KIND={0:["var(--raised)","var(--ink-3)"],1:["var(--red-wash)","var(--red)"],2:["#2A2416","var(--yellow)"]};
+var pipe=document.getElementById("pipe"), detail=document.getElementById("detail"),
+    visEl=document.getElementById("vis"), cur=2, sbtns=[];
+STAGES.forEach(function(d,i){
+  var b=document.createElement("button");
+  b.className="stagebtn";
+  b.innerHTML='<p>'+d.n+'</p><p>'+d.t+'</p>';
+  b.addEventListener("click",function(){cur=i;drawPipe()});
+  pipe.appendChild(b);sbtns.push(b)});
+function drawPipe(){
+  sbtns.forEach(function(b,i){
+    var k=KIND[STAGES[i].k],on=i===cur;
+    b.style.background=on?k[0]:"var(--card)";
+    b.style.borderBottomColor=on?k[1]:"var(--hairline)";
+    b.children[0].style.color=k[1];
+    b.children[1].style.color=on?"var(--ink)":"var(--ink-2)"});
+  var d=STAGES[cur],k=KIND[d.k];
+  visEl.innerHTML=d.vis();
+  detail.innerHTML='<p style="font-size:15px;font-weight:500;color:'+k[1]+';margin:0;letter-spacing:-.2px">'+d.head+'</p>'+
+    '<p style="font-size:13px;line-height:1.55;color:var(--ink-2);margin:9px 0 0">'+d.body+'</p>'+
+    '<p class="mono" style="font-size:10px;color:var(--ink-3);margin:11px 0 0">'+d.meta+'</p>'}
+drawPipe();
+
+/* ============================================================
+   WHAT EXISTS: mosaic and solid
+   ============================================================ */
+function profile(x,z){
+  for(var i=0;i<A.length;i++){var b=A[i];
+    if(b.z===z && x>=b.x && x<b.x+b.w)return b.c}
+  return null}
+document.getElementById("photopanel").innerHTML=dogPhoto();
+(function(){
+  var COLS=16,ROWS=14,T={tan:"#D9A05B",red:"#E23C3E",dark:"#474D56"},BG=["#2E3742","#343E4A"];
+  var el=document.getElementById("mos"),h="",count=0;
+  el.style.gridTemplateColumns="repeat("+COLS+",1fr)";
+  for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){
+    var x=1+Math.floor(c*8/COLS), z=6-Math.floor(r*7/ROWS), hit=profile(x,z);
+    count++;
+    h+='<div style="background:'+(hit?T[hit]:BG[(r+c)%2])+';border-radius:1px;position:relative">'+
+       '<div style="position:absolute;left:22%;top:22%;width:56%;height:56%;border-radius:50%;background:rgba(255,255,255,.16)"></div></div>'}
+  el.innerHTML=h;
+  document.getElementById("tilect").textContent=count})();
+(function(){
+  var bb=bbox(A,0.72),pad=8,sv2=document.getElementById("solid");
+  sv2.setAttribute("viewBox",(bb[0]-pad).toFixed(1)+" "+(bb[1]-pad).toFixed(1)+" "+
+    (bb[2]-bb[0]+pad*2).toFixed(1)+" "+(bb[3]-bb[1]+pad*2).toFixed(1));
+  sv2.innerHTML=A.slice().sort(function(p,q){return depth(p,0.72)-depth(q,0.72)})
+    .map(function(b){return brick(b,0,0,0.72,{})}).join("")})();
+
+/* ============================================================
+   NEAR MISSES
+   ============================================================ */
+function flatPanel(h){
+  var C2=11,R2=10,T={tan:"#D9A05B",red:"#E23C3E",dark:"#474D56"},BG=["#2E3742","#343E4A"],s="";
+  for(var r=0;r<R2;r++)for(var c=0;c<C2;c++){
+    var x=1+Math.floor(c*8/C2), z=6-Math.floor(r*7/R2), hit=profile(x,z);
+    s+='<div style="background:'+(hit?T[hit]:BG[(r+c)%2])+';border-radius:1px"></div>'}
+  return '<div style="display:grid;grid-template-columns:repeat('+C2+',1fr);gap:1px;height:'+h+'px">'+s+'</div>'}
+var NEAR=[
+ {name:"LegoGPT",flow:"text in, bricks out",
+  input:'<p class="mono" style="font-size:8.5px;color:var(--blue);margin:0;text-align:center;line-height:1.3">"a small<br>brown dog"</p>',
+  out:function(){return svgOf(A,0.72,{pad:4},A,58)},
+  note:"The closest thing to this. You describe the dog instead of showing it."},
+ {name:"brickr and mosaic tools",flow:"photo in, flat panel out",
+  input:'<div style="width:38px;height:34px;border-radius:3px;overflow:hidden;background:#1B2027">'+dogPhoto()+'</div>',
+  out:function(){return flatPanel(58)},
+  note:"This is where my v1 sits."},
+ {name:"Image to 3D models",flow:"photo in, mesh out",
+  input:'<div style="width:38px;height:34px;border-radius:3px;overflow:hidden;background:#1B2027">'+dogPhoto()+'</div>',
+  out:function(){return svgOf(VOX,0.72,{mode:"volume",pad:4},A,58)},
+  note:"They invent the unseen side, which is the trick I need. A mesh is not buildable."}];
+document.getElementById("cards").innerHTML=NEAR.map(function(it){
+  return '<div class="cardbox" style="border-bottom:3px solid var(--blue)">'+
+    '<div style="display:grid;grid-template-columns:44px 14px minmax(0,1fr);align-items:center;gap:8px;background:var(--recessed);border-radius:5px;padding:9px 10px">'+
+    '<div style="height:58px;display:flex;align-items:center;justify-content:center">'+it.input+'</div>'+
+    '<p class="mono" style="font-size:12px;color:var(--ink-4);margin:0;text-align:center">&#8594;</p>'+
+    '<div style="display:flex;justify-content:center"><div style="width:84px">'+it.out()+'</div></div></div>'+
+    '<p style="font-size:13px;font-weight:500;color:var(--ink);margin:11px 0 0">'+it.name+'</p>'+
+    '<p class="mono" style="font-size:9.5px;color:var(--blue);margin:4px 0 0">'+it.flow+'</p>'+
+    '<p style="font-size:12.5px;line-height:1.5;color:var(--ink-2);margin:8px 0 0">'+it.note+'</p></div>'}).join("");
+
+/* ============================================================
+   OPEN QUESTIONS
+   ============================================================ */
+var Q=[{n:"01",q:"Would a slightly wrong model still feel like your dog?",
+        h:"What would have to be right, and what could be off?"},
+       {n:"02",q:"Would you build it, or would you rather it arrived built?",
+        h:"Is the building the point, or the thing you end up with?"},
+       {n:"03",q:"What made you doubt this?",
+        h:"The moment you got sceptical, not a summary."}];
+var qgrid=document.getElementById("qgrid"), qcardSel=-1, qcards=[];
+Q.forEach(function(d,i){
+  var c=document.createElement("button");
+  c.className="qcard";
+  c.innerHTML='<span class="qn mono" style="font-size:10px;color:var(--ink-3)">'+d.n+'</span>'+
+    '<p class="q">'+d.q+'</p><p class="h">'+d.h+'</p>';
+  c.addEventListener("click",function(){qcardSel=i;paintQ();setFormQuestion(i)});
+  qgrid.appendChild(c);qcards.push(c)});
+function paintQ(){
+  qcards.forEach(function(c,i){
+    var on=i===qcardSel;
+    c.style.background=on?"var(--red-wash)":"var(--card)";
+    c.style.borderBottomColor=on?"var(--red)":"var(--hairline)";
+    c.style.transform=on?"translateY(3px)":"none";
+    c.style.borderBottomWidth=on?"1px":"3px";
+    c.querySelector(".qn").style.color=on?"var(--red)":"var(--ink-3)";
+    c.querySelector(".h").style.color=on?"var(--ink-2)":"var(--ink-3)"})}
+paintQ();
+
+/* ============================================================
+   FEEDBACK FORM
+   ============================================================ */
+var GOT=["Yes, instantly","Mostly","No"],
+    GOTC=["var(--green)","var(--yellow)","var(--red)"],
+    GOTHEX=["#6FCF97","#F5C400","#E23C3E"];
+var QSHORT=["01 · would it still feel like yours","02 · build it or receive it",
+            "03 · what made you doubt","Something else"];
+var QFULL=["WOULD A SLIGHTLY WRONG MODEL STILL FEEL LIKE YOUR DOG?",
+           "WOULD YOU BUILD IT, OR WOULD YOU RATHER IT ARRIVED BUILT?",
+           "WHAT MADE YOU DOUBT THIS?","WHAT DO YOU WANT TO TELL ME?"];
+var QPLACE=["What would have to be right, and what could be off?",
+            "Is the building the point, or the thing you end up with?",
+            "The moment you got sceptical, not a summary.","Anything at all."];
+var BUY=["Buy the missing ones","Only what is in the box","Depends on the price"];
+var gotSel=-1,qSel=-1,buySel=-1,responses=[];
+function mkOpts(host,labels,onPick){
+  var made=[];
+  labels.forEach(function(t,i){
+    var b=document.createElement("button");
+    b.className="opt";b.textContent=t;
+    b.addEventListener("click",function(){onPick(i)});
+    host.appendChild(b);made.push(b)});
+  return made}
+function styleOpts(set,sel,colour){
+  set.forEach(function(b,i){
+    var on=i===sel;
+    b.style.background=on?"var(--red-wash)":"var(--card)";
+    b.style.color=on?"var(--ink)":"var(--ink-2)";
+    b.style.borderBottomColor=on?(typeof colour==="function"?colour(i):colour):"var(--hairline)";
+    b.style.transform=on?"translateY(3px)":"none";
+    b.style.borderBottomWidth=on?"1px":"3px"})}
+var gotSet=mkOpts(document.getElementById("f-got"),GOT,function(i){gotSel=i;paintForm()});
+var qSet=mkOpts(document.getElementById("f-q"),QSHORT,function(i){qSel=i;paintForm()});
+var buySet=mkOpts(document.getElementById("f-buy"),BUY,function(i){buySel=i;paintForm()});
+function setFormQuestion(i){qSel=i;paintForm()}
+function paintForm(){
+  styleOpts(gotSet,gotSel,function(i){return GOTC[i]});
+  styleOpts(qSet,qSel,"var(--red)");
+  styleOpts(buySet,buySel,"var(--blue)");
+  var lbl=document.getElementById("f-qlabel"),ta=document.getElementById("f-answer");
+  if(qSel>=0){lbl.textContent=QFULL[qSel];lbl.style.color="var(--ink)";ta.placeholder=QPLACE[qSel]}
+  else{lbl.textContent="ANYTHING YOU WANT TO SAY";lbl.style.color="var(--ink-2)";
+       ta.placeholder="Pick a question above and this changes to it."}}
+paintForm();
+
+document.getElementById("f-submit").addEventListener("click",function(){
+  var payload={
+    name:document.getElementById("f-name").value.trim()||"(anonymous)",
+    understood:GOT[gotSel<0?1:gotSel],
+    question:QSHORT[qSel<0?3:qSel],
+    answer:document.getElementById("f-answer").value.trim(),
+    missing_bricks:buySel<0?"(not answered)":BUY[buySel],
+    wants_to_make:document.getElementById("f-make").value.trim(),
+    recognisable_or_stable:document.getElementById("f-expert").value.trim(),
+    brick_threshold:threshold===null?"(not picked)":threshold+" bricks"};
+  responses.push({got:gotSel<0?1:gotSel,q:qSel<0?3:qSel});
+  showResults();
+  if(FORM_ENDPOINT.indexOf("REPLACE_WITH")===-1){
+    fetch(FORM_ENDPOINT,{method:"POST",
+      headers:{"Content-Type":"application/json","Accept":"application/json"},
+      body:JSON.stringify(payload)}).catch(function(){})}});
+
+function showResults(){
+  document.getElementById("form").style.display="none";
+  document.getElementById("done").style.display="block";
+  var wall=document.getElementById("wall");wall.innerHTML="";
+  responses.forEach(function(r){
+    var i=document.createElement("i");i.style.background=GOTHEX[r.got];wall.appendChild(i)});
+  var counts=[0,0,0,0];responses.forEach(function(r){counts[r.q]++});
+  var top=counts.indexOf(Math.max.apply(null,counts));
+  document.getElementById("r-count").textContent=responses.length;
+  document.getElementById("r-got").textContent=
+    responses.filter(function(r){return r.got===0}).length+" of "+responses.length;
+  document.getElementById("r-top").textContent=top<3?("Q0"+(top+1)):"other"}
+document.getElementById("again").addEventListener("click",function(){
+  document.getElementById("done").style.display="none";
+  document.getElementById("form").style.display="block";
+  gotSel=-1;qSel=-1;buySel=-1;paintForm();
+  document.getElementById("f-answer").value="";
+  document.getElementById("f-make").value="";
+  document.getElementById("f-expert").value=""});
+if(FORM_ENDPOINT.indexOf("REPLACE_WITH")!==-1){
+  document.getElementById("f-note").textContent="note to self: paste your Formspree id into index.html or nothing is collected"}
+
+/* ============================================================
+   SCROLLSPY AND RESIZE
+   ============================================================ */
+var spies=[].slice.call(document.querySelectorAll(".links a[data-spy]"));
+if("IntersectionObserver" in window){
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      spies.forEach(function(a){a.classList.toggle("active",a.dataset.spy===en.target.id)})})},
+    {rootMargin:"-45% 0px -50% 0px"});
+  spies.forEach(function(a){var t=document.getElementById(a.dataset.spy);if(t)io.observe(t)})}
+
+var rt;
+function sizeAll(){W=stage.clientWidth;drawHero()}
+window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(sizeAll,150)});
+sizeAll();
+})();
+</script>
+</body>
+</html>
